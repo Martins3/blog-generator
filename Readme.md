@@ -27,3 +27,5 @@ https://github.com/BurntSushi/walkdir
 
 ## Papers to be read
 https://arxiv.org/pdf/1903.00982.pdf
+https://arxiv.org/pdf/1903.01314.pdf
+https://arxiv.org/pdf/1708.06931.pdf

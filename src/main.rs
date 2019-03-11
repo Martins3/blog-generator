@@ -11,9 +11,10 @@ fn main() {
         .about("Lightweight blog framework based on github")
         .args_from_usage("-d, --directory=[DIR] 'blog source tree directory'")
         .subcommand(
-            SubCommand::with_name("create")
-                .about("create new papers")
-                .arg_from_usage("-p, --paper 'create paper reading notes'"),
+            SubCommand::with_name("new")
+                .about("create new article")
+                .arg_from_usage("-p, --paper 'create paper reading notes'")
+                .arg_from_usage("-n, --note 'write notes'"),
         )
         .get_matches();
 
@@ -22,18 +23,24 @@ fn main() {
         eprintln!("Blog directory is not implemented");
     }
 
-    if let Some(matches) = matches.subcommand_matches("create") {
+    if let Some(matches) = matches.subcommand_matches("new") {
+        let mut t = blog::category::ArticleType::Blog;
         if matches.is_present("paper") {
+            t = blog::category::ArticleType::Paper;
             println!("Create a paper tempalete");
-            // blog::category::paper::create_template();
-        } else {
-            println!("Create a normal blog");
-            // blog::category::create_template();
+        } else if matches.is_present("note") {
+            t = blog::category::ArticleType::BlogNotes;
+            println!("Create a new note");
         }
-    }
 
-    if let Err(e) = blog::gg() {
-        println!("Application error: {}", e);
-        process::exit(1);
+        if let Err(e) = blog::category::new(t) {
+            println!("Create temaplate error: {}", e);
+            process::exit(1);
+        }
+    } else {
+        if let Err(e) = blog::gg() {
+            println!("Application error: {}", e);
+            process::exit(1);
+        }
     }
 }

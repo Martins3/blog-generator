@@ -7,3 +7,5 @@ edition = "2018"
 [dependencies]
 glob="0.2.11"
 clap="2.32.0"
+chrono = "0.4"
+nix = "0.13.0"

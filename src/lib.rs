@@ -64,7 +64,7 @@ fn relative_dir(p: &String) -> &str {
 }
 
 fn syntax_warning(entry: &PathBuf, line_num: i32, msg: &str) {
-    eprintln!("Warn {} : {}:{}", msg, entry.display(),  line_num);
+    eprintln!("Warn {} : {}:{}", msg, entry.display(), line_num);
 }
 
 pub fn gg() -> Result<(), Box<dyn std::error::Error>> {
@@ -124,11 +124,9 @@ pub fn gg() -> Result<(), Box<dyn std::error::Error>> {
 
                 match function {
                     "Category" => {
-                        if vec.len() > 1 {
-                            syntax_warning(&entry, line_num, "More than one category");
+                        if vec.len() != 0 {
+                            a.borrow_mut().category = String::from(parameter);
                         }
-
-                        a.borrow_mut().category = String::from(vec[0]);
                     }
 
                     "date" => {

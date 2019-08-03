@@ -14,7 +14,8 @@ fn main() {
             SubCommand::with_name("new")
                 .about("create new article")
                 .arg_from_usage("-p, --paper 'create paper reading notes'")
-                .arg_from_usage("-n, --note 'write notes'"),
+                .arg_from_usage("-n, --note 'write notes'")
+                .arg_from_usage("-k, --kernel 'kernel'"),
         )
         .get_matches();
 
@@ -31,6 +32,9 @@ fn main() {
         } else if matches.is_present("note") {
             t = blog::category::ArticleType::BlogNotes;
             println!("Create a new note");
+        } else if matches.is_present("kernel") {
+            t = blog::category::ArticleType::Kernel;
+            println!("Create a new kernel question !");
         }
 
         if let Err(e) = blog::category::new(t) {

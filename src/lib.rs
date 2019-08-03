@@ -13,6 +13,7 @@ mod tags;
 
 use glob::glob;
 
+#[allow(dead_code)]
 pub struct Article {
     path: PathBuf,
     title: String,

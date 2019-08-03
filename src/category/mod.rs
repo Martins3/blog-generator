@@ -44,6 +44,7 @@ pub enum ArticleType {
     BlogNotes,
     Paper,
     Blog,
+    Kernel,
 }
 pub fn new(t: ArticleType) -> Result<(), Box<dyn std::error::Error>> {
     let template = {
@@ -60,6 +61,10 @@ pub fn new(t: ArticleType) -> Result<(), Box<dyn std::error::Error>> {
             ArticleType::Blog => {
                 let mut x = String::from("Category:\ntags:\ntitle:\ndate:");
                 x.push_str(dt.format("%Y-%m-%d %H:%M:%S").to_string().as_ref());
+                x
+            }
+            ArticleType::Kernel => {
+                let x = String::from("question:\ntag:");
                 x
             }
         };
@@ -81,6 +86,7 @@ pub fn new(t: ArticleType) -> Result<(), Box<dyn std::error::Error>> {
     writeln!(file, "{}", template)?;
 
     let mut child = Command::new("nvim")
+        .arg("+4")
         .arg(buf)
         .spawn()
         .expect("failed to execute editor");
@@ -150,7 +156,8 @@ pub fn new(t: ArticleType) -> Result<(), Box<dyn std::error::Error>> {
                 .write(true)
                 .create(true)
                 .append(true)
-                .open(blog_notes).expect("Create file failed !");
+                .open(blog_notes)
+                .expect("Create file failed !");
 
             let mut note = String::new();
             note.push_str("---\n");
@@ -160,7 +167,40 @@ pub fn new(t: ArticleType) -> Result<(), Box<dyn std::error::Error>> {
             writeln!(file, "{}", note)?;
         }
 
-        _ => {}
+        ArticleType::Kernel => {
+            // @todo sort tags of questions
+            let blog_notes = super::abs_dir(String::from("kernel/question.md").as_ref());
+
+            let mut file = OpenOptions::new()
+                .write(true)
+                .create(true)
+                .append(true)
+                .open(blog_notes)?;
+
+            let mut note = String::new();
+            note.push_str("* (");
+            match header.get("tag") {
+                Some(a) => note.push_str(a.as_str()),
+                None => note.push_str("unsorted"),
+            }
+
+            note.push_str(") ");
+
+            match header.get("question") {
+                Some(a) => note.push_str(a.as_str()),
+                None => {
+                    return Ok(()); // no question, just return !
+                }
+            }
+
+            note.push('\n');
+            note.push_str(body.as_str());
+            writeln!(file, "{}", note)?;
+        }
+
+        _ => {
+            eprintln!("{}", "unimplemented !");
+        }
     }
 
     Ok(())

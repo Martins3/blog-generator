@@ -15,8 +15,11 @@ fn main() {
                 .about("create new article")
                 .arg_from_usage("-p, --paper 'create paper reading notes'")
                 .arg_from_usage("-n, --note 'write notes'")
-                .arg_from_usage("-k, --kernel 'kernel'"),
+                .arg_from_usage("-k, --kernel 'kernel'")
+                .arg_from_usage("-s, --sentence 'sentence'")
+                .arg_from_usage("-c, --kchecklist 'kernel checklist'"),
         )
+        .subcommand(SubCommand::with_name("build").about("build the blog index"))
         .get_matches();
 
     if let Some(d) = matches.value_of("directory") {
@@ -35,6 +38,12 @@ fn main() {
         } else if matches.is_present("kernel") {
             t = blog::category::ArticleType::Kernel;
             println!("Create a new kernel question !");
+        } else if matches.is_present("kchecklist") {
+            t = blog::category::ArticleType::Kchecklist;
+            println!("Accumulate a checklist of kernel !");
+        } else if matches.is_present("sentence") {
+            t = blog::category::ArticleType::Sentence;
+            println!("Add a new sentence !");
         }
 
         if let Err(e) = blog::category::new(t) {
@@ -42,9 +51,9 @@ fn main() {
             process::exit(1);
         }
     } else {
-        if let Err(e) = blog::gg() {
-            println!("Application error: {}", e);
-            process::exit(1);
-        }
+
+        // if let Err(e) = blog::gg() {
+            println!("Whisper is raw blog source, post the polished article to martins3, jianzhu, zhihu and so on !");
+        // }
     }
 }

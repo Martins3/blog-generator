@@ -45,6 +45,8 @@ pub enum ArticleType {
     Paper,
     Blog,
     Kernel,
+    Sentence,
+    Kchecklist, // accumulate checklist for kernel
 }
 pub fn new(t: ArticleType) -> Result<(), Box<dyn std::error::Error>> {
     let template = {
@@ -67,6 +69,16 @@ pub fn new(t: ArticleType) -> Result<(), Box<dyn std::error::Error>> {
                 let x = String::from("question:\ntag:");
                 x
             }
+
+            ArticleType::Kchecklist => {
+                let x = String::from("desc:");
+                x
+            }
+
+            ArticleType::Sentence=> {
+                let x = String::from("sentence:\nnote:");
+                x
+            }
         };
         template.push_str("\n---");
         template
@@ -80,12 +92,9 @@ pub fn new(t: ArticleType) -> Result<(), Box<dyn std::error::Error>> {
         .create(true)
         .open(buf)?;
 
-    let comments = "# lines start with # will be omitted\n# the first blank line is end of header\n# every header info should reside in one line";
-
-    writeln!(file, "{}", comments)?;
     writeln!(file, "{}", template)?;
 
-    let mut child = Command::new("nvim")
+    let mut child = Command::new("/usr/bin/nvim")
         .arg("+4")
         .arg(buf)
         .spawn()
@@ -178,7 +187,7 @@ pub fn new(t: ArticleType) -> Result<(), Box<dyn std::error::Error>> {
                 .open(blog_notes)?;
 
             let mut note = String::new();
-            note.push_str("* (");
+            note.push_str("#### (");
             match header.get("tag") {
                 Some(a) => note.push_str(a.as_str()),
                 None => note.push_str("unsorted"),
@@ -198,10 +207,61 @@ pub fn new(t: ArticleType) -> Result<(), Box<dyn std::error::Error>> {
             writeln!(file, "{}", note)?;
         }
 
+        ArticleType::Kchecklist => {
+            // @todo sort tags of questions
+            let blog_notes = super::abs_dir(String::from("kernel/kchecklist.md").as_ref());
+
+            let mut file = OpenOptions::new()
+                .write(true)
+                .create(true)
+                .append(true)
+                .open(blog_notes)?;
+
+            let mut note = String::new();
+            note.push_str("## ");
+            match header.get("desc") {
+                Some(a) => note.push_str(a.as_str()),
+                None => note.push_str("Not description"),
+            }
+
+            note.push('\n');
+            note.push_str(body.as_str());
+            writeln!(file, "{}", note)?;
+        }
+
+        ArticleType::Sentence => {
+            // @todo sort tags of questions
+            let blog_notes = super::abs_dir(String::from("TG/sentence.md").as_ref());
+
+            let mut file = OpenOptions::new()
+                .write(true)
+                .create(true)
+                .append(true)
+                .open(blog_notes)?;
+
+            let mut note = String::new();
+            match header.get("note") {
+                Some(a) => note.push_str(a.as_str()),
+                None => note.push_str("unsorted"),
+            }
+
+            note.push_str("\n");
+
+            match header.get("sentence") {
+                Some(a) => note.push_str(a.as_str()),
+                None => note.push_str("empty sentence"),
+            }
+
+            note.push('\n');
+            note.push_str(body.as_str());
+            writeln!(file, "{}", note)?;
+        }
+
         _ => {
             eprintln!("{}", "unimplemented !");
         }
     }
+
 
     Ok(())
 }

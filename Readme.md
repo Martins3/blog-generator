@@ -1,8 +1,10 @@
 # A brand new lightweight blog framework
 Blog framework becomes bigger and bigger, hexo even caused nearly one gigabyte 
 
-# todo
+## Install Locally
+cargo install --path . --force
 
+# todo
 https://gitpress.io/c/helps/collection-toc
 
 ## Ref

@@ -95,7 +95,7 @@ pub fn new(t: ArticleType) -> Result<(), Box<dyn std::error::Error>> {
     writeln!(file, "{}", template)?;
 
     let mut child = Command::new("/usr/bin/nvim")
-        .arg("+4")
+        .arg("+0")
         .arg(buf)
         .spawn()
         .expect("failed to execute editor");
@@ -231,7 +231,7 @@ pub fn new(t: ArticleType) -> Result<(), Box<dyn std::error::Error>> {
 
         ArticleType::Sentence => {
             // @todo sort tags of questions
-            let blog_notes = super::abs_dir(String::from("TG/sentence.md").as_ref());
+            let blog_notes = super::abs_dir(String::from("collection/TG/sentence.md").as_ref());
 
             let mut file = OpenOptions::new()
                 .write(true)
@@ -242,7 +242,7 @@ pub fn new(t: ArticleType) -> Result<(), Box<dyn std::error::Error>> {
             let mut note = String::new();
             match header.get("note") {
                 Some(a) => note.push_str(a.as_str()),
-                None => note.push_str("unsorted"),
+                None => note.push_str("[]"),
             }
 
             note.push_str("\n");

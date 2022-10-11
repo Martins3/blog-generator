@@ -5,6 +5,4 @@ authors = ["Martins3 <hubachelar@qq.com>"]
 edition = "2018"
 
 [dependencies]
-glob="0.2.11"
-clap="2.32.0"
-chrono = "0.4"
+
